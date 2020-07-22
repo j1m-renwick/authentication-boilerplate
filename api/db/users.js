@@ -14,7 +14,6 @@ export const findById = function(id, cb) {
 
 export const findByUsername = function(username, cb) {
     for(var i = 0, len = records.length; i < len; i++) {
-        console.log(records[i]);
         var record = records[i];
         if(record.username === username) {
             return cb(null, record);

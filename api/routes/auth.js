@@ -4,7 +4,6 @@ import passport from 'passport';
 const router = Router();
 
 router.post('/login', (req, res) => {
-    console.log(req.body);
     passport.authenticate('local', {}, (err, user) => {
         if(err || !user) {
             res.status(403);

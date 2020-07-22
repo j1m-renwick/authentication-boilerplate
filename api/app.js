@@ -5,16 +5,16 @@ import httpErrors from 'http-errors';
 import logger from 'morgan';
 import path from 'path';
 import passport from 'passport';
-import {Strategy} from 'passport-local';
+import {Strategy as LocalStrategy} from 'passport-local';
 import authRouter from './routes/auth';
 import {v4 as uuid} from 'uuid';
 import {findByUsername, findById} from './db/users';
+import morgan from "morgan";
+import chalk from 'chalk';
 
 
 const app = express();
 const SECRET_KEY = "mysecrethere"
-
-app.use(logger('dev'));
 
 // various parsing middlewares
 app.use(express.json());
@@ -22,8 +22,12 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 
-// middleware to log api requests and responses
-app.use(require('morgan')('combined'));
+// middleware to log api request
+app.use(logger('dev'));
+app.use(morgan('combined'));
+// log JSON request body
+morgan.token('body', function (req, res) { return JSON.stringify(req.body, null, 2) });
+app.use(morgan(function (tokens, req, res) {return chalk.bold.yellow("JSON REQUEST\n") + tokens.body(req, res)}))
 
 // serve static public files for the api project (if needed)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -37,7 +41,7 @@ app.use(express.static(path.join(__dirname, '../build')));
 // (`username` and `password`) submitted by the user.  The function must verify
 // that the password is correct and then invoke `cb` with a user object, which
 // will be set at `req.user` in route handlers after authentication.
-passport.use(new Strategy(
+passport.use("local", new LocalStrategy({},
     function(username, password, cb) {
         findByUsername(username, function(err, user) {
             if(err) {
@@ -96,7 +100,7 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
-app.post('/ping', function(req, res) {
+app.get('/ping', function(req, res) {
     res.send("PONG");
 });
 
