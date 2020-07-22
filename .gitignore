@@ -4,12 +4,22 @@
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
 
 # testing
 /coverage
 
 # production
 /build
+
+# intellij
+/.idea
+express-passport-react-boilerplate.iml
+
+# express server
+api/package-lock.json
+api/.yo-rc.json
+api/node_modules
 
 # misc
 .DS_Store
