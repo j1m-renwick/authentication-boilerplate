@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/auth";
-import {Button} from "../style/Forms";
+import {Button, Card, Form} from "../style/Forms";
 
 function Admin(props) {
     const { setLoggedIn } = useAuth();
@@ -13,10 +13,10 @@ function Admin(props) {
     }
 
     return (
-        <div>
-            <div>Admin Page</div>
+        <Card>
+            <Form>Admin Page</Form>
             <Button onClick={logOut}>Log out</Button>
-        </div>
+        </Card>
     );
 }
 

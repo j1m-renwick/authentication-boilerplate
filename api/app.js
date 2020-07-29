@@ -12,7 +12,6 @@ import {findByUsername, findById} from './db/users';
 import morgan from "morgan";
 import chalk from 'chalk';
 
-
 const app = express();
 const SECRET_KEY = "mysecrethere"
 

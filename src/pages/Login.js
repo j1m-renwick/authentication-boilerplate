@@ -21,6 +21,7 @@ function Login(props) {
             },
             body: JSON.stringify({"username": userName, "password": password})
         }).then(function(response) {
+            // TODO save token from response
             setLoggedIn(response.status === 200);
             setIsError(response.status !== 200);
         }).catch(res => {
