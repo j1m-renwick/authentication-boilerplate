@@ -26,11 +26,13 @@ router.post('/login', (req, res) => {
             let token = uuid();
             // save to redis with expiry
             redisClient.set(req.body.username, token, "EX", TOKEN_EXPIRY_SECS, (err, response) => {
-                console.log(response);
                 if(response === "OK") {
                     res.status(200);
                     let expiryDate = new Date();
                     expiryDate.setSeconds(expiryDate.getSeconds() + TOKEN_EXPIRY_SECS);
+                    // TODO make sure cookie is marked as secure before deploying!
+                    res.cookie('session-token',token, { maxAge: TOKEN_EXPIRY_SECS * 1000, httpOnly: true});
+                    //  TODO do we want to expose the token in the response body?
                     res.json({
                         "username": req.body.username,
                         "token": token,
@@ -46,16 +48,23 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/validate', function(req, res) {
-    console.log(req.headers.token);
-    console.log(req.query.username);
-    redisClient.get(req.query.username, (err, response) => {
-        if(response === req.headers.token) {
-            res.status(200);
-        } else {
-            res.status(400);
-        }
-        res.json();
-    })
+    if (req.cookies['session-token']) {
+        console.log("COOKIE FOUND!")
+    } else  {
+        console.log("COOKIE NOT FOUND...")
+    }
+    res.status(201);
+    res.json();
+    // console.log(req.headers.token);
+    // console.log(req.query.username);
+    // redisClient.get(req.query.username, (err, response) => {
+    //     if(response === req.headers.token) {
+    //         res.status(200);
+    //     } else {
+    //         res.status(400);
+    //     }
+    //     res.json();
+    // })
 });
 
 // router.get('/logout', function(req, res) {

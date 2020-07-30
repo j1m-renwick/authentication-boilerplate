@@ -19,15 +19,23 @@ function Login(props) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            credentials: "same-origin",
             body: JSON.stringify({"username": userName, "password": password})
-        }).then(function(response) {
-            // TODO save token from response
-            setLoggedIn(response.status === 200);
-            setIsError(response.status !== 200);
+        }).then(res => {
+            // token cookie is saved by the browser here - any future requests to
+            // the domain will include it by default.
+            let success = res.status === 200
+            setLoggedIn(success);
+            setIsError(!success);
         }).catch(res => {
             setLoggedIn(false);
             setIsError(true);
         })
+
+        // fetch('/auth/validate', {
+        //     method: 'get',
+        //     credentials: "same-origin"
+        // }).then(res => console.log("HERE NOW"))
     }
 
     if(loggedIn) {
