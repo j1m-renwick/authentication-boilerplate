@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Admin from "./private/Admin";
 import PrivateRoute from "./routing/PrivateRoute";
+import {LinkHeaderContainer, LinkHeaderItem} from "./style/Styles";
 
 function App() {
 
@@ -17,14 +18,14 @@ function App() {
             <AuthContext.Provider value={{loggedIn, setLoggedIn: setLoggedIn}}>
                 <Router>
                     <div>
-                        <ul>
-                            <li>
+                        <LinkHeaderContainer>
+                            <LinkHeaderItem>
                                 <Link to="/">Home Page</Link>
-                            </li>
-                            <li>
+                            </LinkHeaderItem>
+                            <LinkHeaderItem>
                                 <Link to="/login">Login Page</Link>
-                            </li>
-                        </ul>
+                            </LinkHeaderItem>
+                        </LinkHeaderContainer>
                         <Route exact path="/" component={Home}/>
                         <Route path="/login" component={Login}/>
                         <PrivateRoute path="/admin" component={Admin}/>

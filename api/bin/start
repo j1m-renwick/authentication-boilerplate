@@ -5,9 +5,9 @@
  */
 import http from 'http';
 import app from '../app';
-
-// TODO there's probably a better way to define a color in the logger
-const cyan = '\x1b[36m%s\x1b[0m'
+import https from "https";
+import fs from "fs";
+import chalk from "chalk";
 
 /**
  * Normalize a port into a number, string, or false.
@@ -37,10 +37,18 @@ const port = normalizePort(process.env.PORT || '3030');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTP/HTTPS server.
  */
 
-const server = http.createServer(app);
+const isHttpsServer = process.env.REACT_APP_HTTPS || false;
+console.log('Starting', isHttpsServer ? chalk.red("HTTPS") : chalk.green("HTTP"), 'server...');
+
+const server = isHttpsServer ?
+    https.createServer({
+        key: fs.readFileSync('server.key'),
+        cert: fs.readFileSync('server.cert')
+    }, app) :
+    http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -85,5 +93,7 @@ server.on('listening', () => {
     const bind = typeof addr === 'string'
         ? `pipe ${addr}`
         : `port ${addr.port}`;
-    console.log(cyan, `Listening on ${bind}`);
+    console.log(chalk.cyan(`Listening on ${bind}`));
 });
+
+export default isHttpsServer;

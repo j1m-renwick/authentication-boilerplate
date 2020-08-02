@@ -36,12 +36,23 @@ const Button = styled.button`
 `;
 
 const Logo = styled.img`
-  width: 50%;
+  width: 80%;
   margin-bottom: 1rem;
 `;
 
 const Error = styled.div`
-  background-color: red;
+  background-color: crimson;
+  padding: 10px;
 `;
 
-export { Form, Input, Button, Logo, Card, Error };
+const LinkHeaderContainer = styled.div`
+    margin: 10px;
+    padding: 10px;
+    background-color: aliceblue;
+`;
+
+const LinkHeaderItem = styled.div`
+    padding: 5px;
+`;
+
+export {Form, Input, Button, Logo, Card, Error, LinkHeaderContainer, LinkHeaderItem};

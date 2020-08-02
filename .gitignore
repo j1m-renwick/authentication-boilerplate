@@ -20,6 +20,8 @@ express-passport-react-boilerplate.iml
 api/package-lock.json
 api/.yo-rc.json
 api/node_modules
+api/server.cert
+api/server.key
 
 # misc
 .DS_Store

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Redirect} from "react-router-dom";
-import {Button, Card, Error, Form, Input, Logo} from "../style/Forms";
+import {Button, Card, Error, Form, Input, Logo} from "../style/Styles";
 import {useAuth} from "../context/auth";
 import logoImg from "../images/logo.jpg";
 
@@ -27,15 +27,17 @@ function Login(props) {
             let success = res.status === 200
             setLoggedIn(success);
             setIsError(!success);
+        }).then(() => {
+            return fetch('/auth/validate', {
+                method: 'get',
+                credentials: "same-origin"
+            })
+        }).then(res => {
+            console.log("Finished calling /validate")
         }).catch(res => {
             setLoggedIn(false);
             setIsError(true);
         })
-
-        // fetch('/auth/validate', {
-        //     method: 'get',
-        //     credentials: "same-origin"
-        // }).then(res => console.log("HERE NOW"))
     }
 
     if(loggedIn) {
@@ -65,7 +67,7 @@ function Login(props) {
                 />
                 <Button onClick={postLogin}>Sign In</Button>
             </Form>
-            { isError &&<Error>The username or password provided were incorrect!</Error> }
+            { isError &&<Error>The username or password provided was incorrect</Error> }
         </Card>
     );
 }

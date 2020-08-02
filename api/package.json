@@ -6,6 +6,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon ./bin/start --exec babel-node --presets babel-preset-env",
+    "start:secure": "npm --prefix ../ run build && REACT_APP_HTTPS=true nodemon ./bin/start --exec babel-node --presets babel-preset-env",
     "test": "mocha --recursive"
   },
   "dependencies": {

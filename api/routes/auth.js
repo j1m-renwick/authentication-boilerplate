@@ -2,6 +2,7 @@ import {Router} from 'express';
 import passport from 'passport';
 import redis from 'redis';
 import {v4 as uuid} from 'uuid';
+import isHttpsServer from "../bin/start";
 
 const REDIS_URL = "redis://127.0.0.1:8012"
 const TOKEN_EXPIRY_SECS = 60 * 5;
@@ -31,8 +32,13 @@ router.post('/login', (req, res) => {
                     let expiryDate = new Date();
                     expiryDate.setSeconds(expiryDate.getSeconds() + TOKEN_EXPIRY_SECS);
                     // TODO make sure cookie is marked as secure before deploying!
-                    res.cookie('session-token',token, { maxAge: TOKEN_EXPIRY_SECS * 1000, httpOnly: true});
-                    //  TODO do we want to expose the token in the response body?
+                    let cookieOptions =  {maxAge: TOKEN_EXPIRY_SECS * 1000, httpOnly: true};
+                    if (isHttpsServer) {
+                        cookieOptions.secure = true;
+                    }
+                    console.log("HERE");
+                    res.cookie('session-token',token, cookieOptions);
+                    //  TODO shouldn't expose the token in the response body (unless debugging?)
                     res.json({
                         "username": req.body.username,
                         "token": token,
@@ -50,21 +56,16 @@ router.post('/login', (req, res) => {
 router.get('/validate', function(req, res) {
     if (req.cookies['session-token']) {
         console.log("COOKIE FOUND!")
+        redisClient.get(req.query.username, (err, response) => {
+            if(response === req.cookies['session-token']) {
+                res.status(200);
+            }
+        })
     } else  {
         console.log("COOKIE NOT FOUND...")
+        res.status(400);
     }
-    res.status(201);
     res.json();
-    // console.log(req.headers.token);
-    // console.log(req.query.username);
-    // redisClient.get(req.query.username, (err, response) => {
-    //     if(response === req.headers.token) {
-    //         res.status(200);
-    //     } else {
-    //         res.status(400);
-    //     }
-    //     res.json();
-    // })
 });
 
 // router.get('/logout', function(req, res) {
