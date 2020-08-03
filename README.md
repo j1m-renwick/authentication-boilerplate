@@ -1,3 +1,37 @@
+# User login flow
+
+This is an example project that is split into two parts:
+
+- an ES6-transpiled Express server (created using `generator-express-es6`), to serve as the backend of the application and exposes authentication APIs to track session tokens.  It also serves the frontend build bundle. Includes:
+    - `passport` (authentication)
+    - `express` (server)
+    - `redis` (cache storage)
+
+- a frontend (created using `react-create-app`) that uses routing to only show authorized pages for the user based on API responses. Includes:
+    - `easy-peasy` (redux framework for state management)
+    - `react-router` (page routing)
+    - `styled-components` (component styling)
+
+There are 3 API endpoints in the flow: one to generate a `httpOnly` token cookie, one to validate the token cookie is valid, and one to invalidate the token and expire the cookie.
+
+---
+
+### To run:
+
+1) With docker installed, run the command `docker run --name express-redis-p 8012:6379 -d redis` to start a new redis 
+container on port 8012 (after the initial command, you can run `docker container start express-redis` to start the container).
+2) In a terminal window, navigate to the /api folder from the project root directory, and run `npm start`.
+3) In a separate terminal window, navigate to the project root directory and run `npm start`.  
+4) Navigate to `localhost:3000` and sign in using the username:`jack` and password:`secret`. (In development mode, API calls will be proxied to the express server on `localhost:3030`. In production mode, the react app and express should all be available on `localhost:3030`)
+
+**NOTE**: 
+- For step 2 you can decide to run `npm run start:secure` instead, to start the express server on HTTPS locally.
+Running in this mode will mark the token cookie as `secure` as well.
+- This mode relies on generating self-signed certificate files for the express server by running `openssl req -nodes -new -x509 -keyout server.key -out server.cert
+` in a terminal, and adding them into the /api directory. 
+
+----
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
