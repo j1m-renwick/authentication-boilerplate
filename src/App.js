@@ -23,7 +23,7 @@ function App() {
                                 <Link to="/">Home Page</Link>
                             </LinkHeaderItem>
                             <LinkHeaderItem>
-                                <Link to="/login">Login Page</Link>
+                                <Link to="/admin">Admin Page</Link>
                             </LinkHeaderItem>
                         </LinkHeaderContainer>
                         <Route exact path="/" component={Home}/>
