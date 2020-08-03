@@ -3,6 +3,7 @@ import passport from 'passport';
 import redis from 'redis';
 import {v4 as uuid} from 'uuid';
 import isHttpsServer from "../bin/start";
+import {ApiError, ErrorType} from "../errors/auth-errors";
 
 const REDIS_URL = "redis://127.0.0.1:8012"
 const TOKEN_EXPIRY_SECS = 60 * 5;
@@ -14,65 +15,72 @@ const redisClient = redis.createClient(REDIS_URL);
 
 const router = Router();
 
-router.post('/login', (req, res) => {
+const okJson = res => {
+    return res.status(200).json({"response": "ok"});
+}
 
+router.post('/login', (req, res, next) => {
     // authenticate with db
     passport.authenticate('local', {}, (err, user) => {
         if(err || !user) {
-            // return unauthorised status if authentication fails
-            res.status(403);
-            res.json()
+            next(ApiError(ErrorType.INCORRECT_CREDENTIALS));
         } else {
             // generate token
             let token = uuid();
             // save to redis with expiry
             redisClient.set(req.body.username, token, "EX", TOKEN_EXPIRY_SECS, (err, response) => {
                 if(response === "OK") {
-                    res.status(200);
                     let expiryDate = new Date();
                     expiryDate.setSeconds(expiryDate.getSeconds() + TOKEN_EXPIRY_SECS);
-                    // TODO make sure cookie is marked as secure before deploying!
-                    let cookieOptions =  {maxAge: TOKEN_EXPIRY_SECS * 1000, httpOnly: true};
-                    if (isHttpsServer) {
+                    let cookieOptions = {maxAge: TOKEN_EXPIRY_SECS * 1000, httpOnly: true};
+                    if(isHttpsServer) {
                         cookieOptions.secure = true;
                     }
-                    console.log("HERE");
-                    res.cookie('session-token',token, cookieOptions);
-                    //  TODO shouldn't expose the token in the response body (unless debugging?)
+                    res.cookie('session-token', token, cookieOptions);
+                    //  TODO remove the token from the response body?
+                    res.status(200);
                     res.json({
                         "username": req.body.username,
                         "token": token,
                         "expires": expiryDate.toISOString()
                     })
                 } else {
-                    res.status(500);
-                    res.json({"error": "redis cannot process request."})
+                    next(ApiError(ErrorType.INCORRECT_CREDENTIALS));
                 }
             })
         }
     })(req, res);
 });
 
-router.get('/validate', function(req, res) {
-    if (req.cookies['session-token']) {
-        console.log("COOKIE FOUND!")
+router.get('/validate', (req, res, next) => {
+    if(!req.query.username) {
+        next(ApiError(ErrorType.NO_USERNAME_SUPPLIED));
+    } else if(req.cookies['session-token']) {
         redisClient.get(req.query.username, (err, response) => {
-            if(response === req.cookies['session-token']) {
-                res.status(200);
+            if(!err && response === req.cookies['session-token']) {
+                okJson(res);
+            } else {
+                next(ApiError(ErrorType.TOKEN_NOT_VALID));
             }
         })
-    } else  {
-        console.log("COOKIE NOT FOUND...")
-        res.status(400);
+    } else {
+        next(ApiError(ErrorType.TOKEN_NOT_VALID));
     }
-    res.json();
 });
 
-// router.get('/logout', function(req, res) {
-//     redisClient.del()
-//     req.logout();
-//     res.redirect('/');
-// });
+router.get('/logout', (req, res, next) => {
+    if(!req.query.username) {
+        next(ApiError(ErrorType.NO_USERNAME_SUPPLIED));
+    }
+    redisClient.del(req.query.username, (err, response) => {
+        if(!err) {
+            okJson(res);
+        } else {
+            next(ApiError(ErrorType.REQUEST_PROCESS_FAIL));
+        }
+    });
+});
+
 //
 // app.get('/profile',
 //     require('connect-ensure-login').ensureLoggedIn(),
