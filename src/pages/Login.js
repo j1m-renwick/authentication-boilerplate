@@ -19,7 +19,6 @@ function Login(props) {
 
     function postLogin() {
         console.log("sending login request...")
-        // TODO update api to return a proper body response and not to rely on status
         postRequest('/auth/login', {"username": userName, "password": password})
             .then(res => {
                 // token cookie is saved by the browser here - any future requests to
