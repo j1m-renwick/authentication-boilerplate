@@ -1,9 +1,9 @@
 import React from "react";
-import {useAuth} from "../context/auth";
 import {BodyText, Button, Card} from "../style/Styles";
+import {useStoreActions} from "easy-peasy";
 
 function Admin(props) {
-    const {setLoggedIn} = useAuth();
+    const setLoggedIn = useStoreActions(actions => actions.setLoggedIn);
 
     function logOut() {
         // TODO delete cookie and send api call to logout of express session - read

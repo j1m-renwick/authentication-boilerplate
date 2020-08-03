@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import {AuthContext} from "./context/auth";
+import React from 'react';
 import {BrowserRouter as Router, Link, Route} from "react-router-dom";
 import './App.css';
 import Home from "./pages/Home";
@@ -10,12 +9,8 @@ import {LinkHeaderContainer, LinkHeaderItem} from "./style/Styles";
 
 function App() {
 
-    const [loggedIn, setLoggedIn] = useState(false);
-
     return (
         <div className="App">
-            {/*// TODO replace context API with redux */}
-            <AuthContext.Provider value={{loggedIn, setLoggedIn: setLoggedIn}}>
                 <Router>
                     <div>
                         <LinkHeaderContainer>
@@ -31,7 +26,6 @@ function App() {
                         <PrivateRoute path="/admin" component={Admin}/>
                     </div>
                 </Router>
-            </AuthContext.Provider>
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import {BodyText, Card, Form} from "../style/Styles";
+import {BodyText, Card} from "../style/Styles";
 
 function Home() {
     return (
