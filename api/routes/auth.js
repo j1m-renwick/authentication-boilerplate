@@ -74,6 +74,13 @@ router.get('/logout', (req, res, next) => {
     }
     redisClient.del(req.query.username, (err, response) => {
         if(!err) {
+            // set the token cookie to a date in the past, so it expires immediately
+            let expiryDate = new Date(1990, 1, 1);
+            let cookieOptions = {expires: expiryDate, maxAge: 0, httpOnly: true};
+            if(isHttpsServer) {
+                cookieOptions.secure = true;
+            }
+            res.cookie('session-token', null, cookieOptions);
             okJson(res);
         } else {
             next(ApiError(ErrorType.REQUEST_PROCESS_FAIL));

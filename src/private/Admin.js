@@ -1,15 +1,26 @@
 import React from "react";
 import {BodyText, Button, Card} from "../style/Styles";
-import {useStoreActions} from "easy-peasy";
+import {useStoreActions, useStoreState} from "easy-peasy";
+import {getRequest} from "../api/util";
 
 function Admin(props) {
+    const username = useStoreState(state => state.username);
+    const setUsername = useStoreActions(state => state.setUsername);
     const setLoggedIn = useStoreActions(actions => actions.setLoggedIn);
 
     function logOut() {
-        // TODO delete cookie and send api call to logout of express session - read
-        // https://stackoverflow.com/questions/27010013/express-session-vs-passportjs-session#:~:text=session%20has%20to%20be%20used%20after%20express.&text=session%20middleware%20is%20to%20deserialize,and%20stored%20in%20the%20session.
-        console.log("logged out!")
-        setLoggedIn(false);
+        getRequest(`/auth/logout?username=${username}`)
+            .then(res => {
+                if(res.status === 200) {
+                    setLoggedIn(false);
+                    setUsername(null);
+                    console.log("logged out successfully.");
+                } else {
+                    console.error("logout api returned status", res.status, "- could not log out!")
+                }
+            }).catch(res => {
+            console.error("logout api returned status", res.status, "- could not log out!")
+        })
     }
 
     return (
