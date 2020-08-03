@@ -5,6 +5,7 @@ import {v4 as uuid} from 'uuid';
 import isHttpsServer from "../bin/start";
 import {ApiError, ErrorType} from "../errors/auth-errors";
 
+const TOKEN_COOKIE_NAME = 'session-token';
 const REDIS_URL = "redis://127.0.0.1:8012"
 const TOKEN_EXPIRY_SECS = 60 * 5;
 
@@ -36,7 +37,7 @@ router.post('/login', (req, res, next) => {
                     if(isHttpsServer) {
                         cookieOptions.secure = true;
                     }
-                    res.cookie('session-token', token, cookieOptions);
+                    res.cookie(TOKEN_COOKIE_NAME, token, cookieOptions);
                     //  TODO remove the token from the response body?
                     res.status(200);
                     res.json({
@@ -55,9 +56,9 @@ router.post('/login', (req, res, next) => {
 router.get('/validate', (req, res, next) => {
     if(!req.query.username) {
         next(ApiError(ErrorType.NO_USERNAME_SUPPLIED));
-    } else if(req.cookies['session-token']) {
+    } else if(req.cookies[TOKEN_COOKIE_NAME]) {
         redisClient.get(req.query.username, (err, response) => {
-            if(!err && response === req.cookies['session-token']) {
+            if(!err && response === req.cookies[TOKEN_COOKIE_NAME]) {
                 okJson(res);
             } else {
                 next(ApiError(ErrorType.TOKEN_NOT_VALID));
@@ -80,7 +81,7 @@ router.get('/logout', (req, res, next) => {
             if(isHttpsServer) {
                 cookieOptions.secure = true;
             }
-            res.cookie('session-token', null, cookieOptions);
+            res.cookie(TOKEN_COOKIE_NAME, null, cookieOptions);
             okJson(res);
         } else {
             next(ApiError(ErrorType.REQUEST_PROCESS_FAIL));
