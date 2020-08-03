@@ -47,6 +47,7 @@ function Login(props) {
 
     return (
         <Card>
+            <h1>Login Page</h1>
             <Logo src={logoImg} />
             <Form>
                 <Input

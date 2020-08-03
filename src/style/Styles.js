@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const Card = styled.div`
   box-sizing: border-box;
-  max-width: 410px;
+  max-width: 50%;
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;
@@ -46,7 +46,8 @@ const Error = styled.div`
 `;
 
 const LinkHeaderContainer = styled.div`
-    margin: 10px;
+    max-width: fit-content;
+    margin: 10px auto;
     padding: 10px;
     background-color: aliceblue;
 `;
@@ -55,4 +56,10 @@ const LinkHeaderItem = styled.div`
     padding: 5px;
 `;
 
-export {Form, Input, Button, Logo, Card, Error, LinkHeaderContainer, LinkHeaderItem};
+const BodyText = styled.div`
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: large;
+`;
+
+export {Form, Input, Button, Logo, Card, Error, LinkHeaderContainer, LinkHeaderItem, BodyText};
