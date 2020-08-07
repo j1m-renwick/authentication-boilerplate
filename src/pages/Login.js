@@ -5,7 +5,7 @@ import {useStoreActions} from 'easy-peasy';
 import {useHistory} from "react-router-dom";
 import {postRequest} from "../api/util";
 
-function Login(props) {
+function Login() {
 
     //pushing to the history is the same as a router Redirect component
     const history = useHistory();
